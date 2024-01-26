@@ -1,41 +1,28 @@
-import { generateClient } from "aws-amplify/api";
 import "./App.css";
-import { FormEvent, useCallback, useEffect, useState } from "react";
-import { Schema } from "../amplify/data/resource";
-import Post from "./components/Post";
+import { Suspense, useEffect, useState } from "react";
+import { usePosts } from "@/utils/usePosts";
+import Post from "@/components/Post";
 
 function App() {
-  const client = generateClient<Schema>();
-  const [posts, setPosts] = useState<Schema["Todo"][] | null>(null);
   const [post, setPost] = useState("");
+  const [lazyInfo, setLazyInfo] = useState<JSX.Element>();
+  const { grabPosts, posts, handleAddPost, handleDelete } = usePosts({
+    post,
+    setPost,
+  });
 
-  const grabPosts = useCallback(async () => {
-    const { data: posts } = await client.models.Todo.list();
-
-    setPosts(posts);
-  }, [client.models.Todo]);
+  useEffect(() => {
+    setLazyInfo(() => <div>Default</div>);
+  }, []);
 
   useEffect(() => {
     grabPosts();
   }, [grabPosts]);
 
-  const handleAddPost = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    if (!post) return;
-    const { data } = await client.models.Todo.create({
-      content: post,
+  const handleClick = () => {
+    import("@/components/Add").then((module) => {
+      setLazyInfo(module.default);
     });
-    console.log("data", data);
-    grabPosts();
-    setPost("");
-  };
-
-  const handleDelete = async (id: string) => {
-    const { data } = await client.models.Todo.delete({
-      id,
-    });
-    console.log("data", data);
-    grabPosts();
   };
 
   return (
@@ -58,6 +45,14 @@ function App() {
         : posts?.map((post) => (
             <Post key={post.id} handleDelete={handleDelete} post={post}></Post>
           ))}
+
+      <button
+        onClick={handleClick}
+        className="bg-yellow-400 p-4 text-black rounded"
+      >
+        Add Complex Component
+      </button>
+      <Suspense>{lazyInfo ? lazyInfo : null}</Suspense>
     </div>
   );
 }

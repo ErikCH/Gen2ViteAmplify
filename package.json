@@ -17,6 +17,7 @@
   "devDependencies": {
     "@aws-amplify/backend": "^0.10.2",
     "@aws-amplify/backend-cli": "^0.9.7",
+    "@types/node": "^20.11.6",
     "@types/react": "^18.2.43",
     "@types/react-dom": "^18.2.17",
     "@typescript-eslint/eslint-plugin": "^6.14.0",
@@ -32,6 +33,7 @@
     "postcss": "^8.4.33",
     "tailwindcss": "^3.4.1",
     "typescript": "^5.3.3",
-    "vite": "^5.0.8"
+    "vite": "^5.0.8",
+    "vite-plugin-checker": "^0.6.2"
   }
 }
